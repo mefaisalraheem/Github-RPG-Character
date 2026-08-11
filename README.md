@@ -25,7 +25,7 @@
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/github-rpg-character.git
+git clone https://github.com/mefaisalraheem/github-rpg-character.git
 
 # Navigate to project directory
 cd github-rpg-character
