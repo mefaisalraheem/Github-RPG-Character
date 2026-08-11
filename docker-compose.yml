@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+    volumes:
+      - ./src:/app/src
+      - ./config:/app/config
+    networks:
+      - rpg-network
+
+networks:
+  rpg-network:
+    driver: bridge

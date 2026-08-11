@@ -1,0 +1,38 @@
+{
+  "name": "github-rpg-character",
+  "version": "1.0.0",
+  "description": "Transform any GitHub profile into an epic RPG character",
+  "main": "src/index.html",
+  "scripts": {
+    "start": "pnpm exec serve src",
+    "dev": "pnpm exec serve src --port 3000",
+    "build": "pnpm exec parcel src/index.html --dist-dir dist",
+    "deploy": "pnpm run build && pnpm exec gh-pages -d dist",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src/**/*.js",
+    "format": "prettier --write src/**/*.{js,html,css}"
+  },
+  "keywords": [
+    "github",
+    "rpg",
+    "character",
+    "profile",
+    "game",
+    "gamification"
+  ],
+  "author": "Malik Faisal Raheem",
+  "license": "MIT",
+  "devDependencies": {
+    "@parcel/core": "^2.8.0",
+    "@parcel/transformer-image": "^2.8.0",
+    "eslint": "^8.28.0",
+    "gh-pages": "^5.0.0",
+    "jest": "^29.3.0",
+    "prettier": "^2.8.0",
+    "serve": "^14.2.6"
+  },
+  "dependencies": {
+    "html2canvas": "^1.4.1"
+  }
+}

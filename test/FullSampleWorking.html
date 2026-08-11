@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GitHub → RPG Character</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <style>
+        /* ========== ALL STYLES EMBEDDED ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #0b0e1a;
+            color: #f0f3ff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 1.5rem;
+        }
+
+        #app {
+            width: 100%;
+            max-width: 820px;
+        }
+
+        /* Search Section */
+        .search-section {
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #f0f3ff;
+            text-shadow: 0 4px 0 rgba(0, 0, 0, 0.7);
+            margin-bottom: 1.5rem;
+        }
+
+        .logo i {
+            color: #a77eff;
+            margin-right: 0.5rem;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .search-box input {
+            flex: 1;
+            min-width: 200px;
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            border: 2px solid #3d445e;
+            background: #1e2437;
+            color: #f0f3ff;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: #a77eff;
+        }
+
+        .search-box input::placeholder {
+            color: #b3c2ed;
+            opacity: 0.6;
+        }
+
+        .btn-primary {
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            border: none;
+            background: linear-gradient(135deg, #6c5ce7, #a77eff);
+            color: white;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(167, 126, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(167, 126, 255, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        /* Error Message */
+        .error-message {
+            margin-top: 1rem;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            background: #ff4757;
+            color: white;
+            display: inline-block;
+        }
+
+        .error-message.hidden {
+            display: none;
+        }
+
+        /* Loading Spinner */
+        .loading-spinner {
+            text-align: center;
+            padding: 3rem 0;
+        }
+
+        .loading-spinner.hidden {
+            display: none;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            border: 4px solid #3d445e;
+            border-top-color: #a77eff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Character Card */
+        .character-card {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .character-card.hidden {
+            display: none;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .rpg-card {
+            background: #1e2437;
+            border-radius: 2.5rem;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7), 0 0 0 2px #3d445e inset;
+            position: relative;
+        }
+
+        .rpg-card::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: -6px;
+            right: -6px;
+            bottom: -6px;
+            border-radius: 2.8rem;
+            border: 2px solid #5f6a8a;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* Profile Header */
+        .profile-header {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.8rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px dashed #3d445e;
+        }
+
+        .avatar-frame {
+            background: #2b324b;
+            border-radius: 60px;
+            padding: 6px;
+            box-shadow: 0 0 0 3px #6b7aa1, 0 8px 0 #0b0e1a;
+        }
+
+        .avatar-frame img {
+            display: block;
+            width: 80px;
+            height: 80px;
+            border-radius: 60px;
+            background: #141a28;
+            object-fit: cover;
+            border: 2px solid #b7c2e6;
+        }
+
+        .hero-title h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #f0f3ff;
+            text-shadow: 0 4px 0 #0b0e1a;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .hero-title h1 small {
+            font-size: 1.1rem;
+            font-weight: 500;
+            background: #2a3352;
+            padding: 0.2rem 1rem;
+            border-radius: 30px;
+            color: #b9cbff;
+            border: 1px solid #55608b;
+        }
+
+        .class-tag {
+            display: inline-block;
+            background: #3c2f4b;
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1rem;
+            color: #d6c9ff;
+            border: 1px solid #7b6b9e;
+            box-shadow: 0 2px 0 #1f172b;
+            margin-top: 0.3rem;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.2rem;
+            margin: 1.8rem 0;
+        }
+
+        .stat-item {
+            background: #141a2b;
+            border-radius: 30px;
+            padding: 0.8rem 1.2rem 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            border: 1px solid #38405e;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6), 0 4px 0 #0a0d17;
+        }
+
+        .stat-item i {
+            font-size: 1.6rem;
+            width: 2rem;
+            color: #b7cbff;
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #7f8bb8;
+        }
+
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #edf2ff;
+            line-height: 1.2;
+        }
+
+        /* XP Section */
+        .xp-section {
+            background: #11162b;
+            border-radius: 50px;
+            padding: 0.8rem 1.5rem;
+            margin: 1.2rem 0 1.8rem;
+            border: 1px solid #3f486b;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.8rem 1.8rem;
+        }
+
+        .xp-bar-wrap {
+            flex: 2;
+            min-width: 180px;
+        }
+
+        .xp-label {
+            display: flex;
+            justify-content: space-between;
+            color: #b3c2ed;
+            font-weight: 500;
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .xp-track {
+            background: #262f4a;
+            height: 14px;
+            border-radius: 40px;
+            overflow: hidden;
+            border: 1px solid #475073;
+        }
+
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #a77eff, #dbb8ff);
+            border-radius: 40px;
+            box-shadow: 0 0 12px #b28aff88;
+            transition: width 0.5s ease;
+        }
+
+        .level-badge {
+            background: #252f4e;
+            padding: 0.2rem 1.4rem;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: #fadf8a;
+            border: 1px solid #b3963e;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        /* Achievements */
+        .achievements {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin: 1.8rem 0 1.6rem;
+        }
+
+        .achievement {
+            background: #1f2742;
+            padding: 0.4rem 1.2rem 0.4rem 1rem;
+            border-radius: 40px;
+            border: 1px solid #57618b;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #d7e2ff;
+            box-shadow: 0 2px 0 #0e121f;
+        }
+
+        .achievement i {
+            color: #f7d44a;
+            font-size: 1.1rem;
+        }
+
+        /* Contribution Map */
+        .contribution-map {
+            background: #0f1426;
+            border-radius: 28px;
+            padding: 1.2rem;
+            border: 1px solid #384267;
+            margin: 1.8rem 0 1.5rem;
+        }
+
+        .map-title {
+            display: flex;
+            justify-content: space-between;
+            color: #8696c7;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 0.6rem;
+        }
+
+        .map-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 6px;
+        }
+
+        .map-cell {
+            aspect-ratio: 1/1;
+            background: #1f2842;
+            border-radius: 6px;
+            border: 1px solid #2c3655;
+            transition: 0.1s;
+        }
+
+        .map-cell.active-low {
+            background: #3b5280;
+            border-color: #5a74b0;
+        }
+
+        .map-cell.active-mid {
+            background: #5d7fd9;
+            border-color: #8aa6ff;
+        }
+
+        .map-cell.active-high {
+            background: #a77eff;
+            border-color: #d4bfff;
+            box-shadow: 0 0 12px #9f7eff;
+        }
+
+        /* Share Row */
+        .share-row {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 1.2rem;
+            padding-top: 1.2rem;
+            border-top: 1px solid #313b5a;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: #26304f;
+            border: none;
+            padding: 0.6rem 1.6rem;
+            border-radius: 60px;
+            font-weight: 600;
+            color: #d4e0ff;
+            border: 1px solid #4b5883;
+            box-shadow: 0 4px 0 #0f1424;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #0f1424;
+        }
+
+        .btn-share {
+            background: #3e3f6b;
+            border-color: #7a85b9;
+        }
+
+        .btn-share i {
+            color: #f5e56b;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem 0 1rem;
+            color: #b3c2ed;
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: #a77eff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 550px) {
+            .rpg-card { padding: 1.2rem; }
+            .hero-title h1 { font-size: 1.8rem; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .xp-section { flex-direction: column; align-items: stretch; }
+            .level-badge { align-self: flex-start; }
+            .search-box input { min-width: 150px; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Search Section -->
+        <section class="search-section">
+            <div class="container">
+                <h1 class="logo">
+                    <i class="fas fa-dragon"></i>
+                    GitHub RPG
+                </h1>
+                <div class="search-box">
+                    <input 
+                        type="text" 
+                        id="usernameInput" 
+                        placeholder="Enter GitHub username..."
+                        autocomplete="off"
+                        value="octocat"
+                    />
+                    <button id="generateBtn" class="btn-primary">
+                        <i class="fas fa-arrow-right"></i>
+                        Generate Character
+                    </button>
+                </div>
+                <div id="errorMessage" class="error-message hidden"></div>
+            </div>
+        </section>
+
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="loading-spinner hidden">
+            <div class="spinner"></div>
+            <p>Summoning your character...</p>
+        </div>
+
+        <!-- Character Card -->
+        <section id="characterCard" class="character-card hidden">
+            <div class="rpg-card">
+                <!-- Header -->
+                <div class="profile-header">
+                    <div class="avatar-frame">
+                        <img id="avatar" src="" alt="Avatar" />
+                    </div>
+                    <div class="hero-title">
+                        <h1>
+                            <span id="displayName">Developer</span>
+                            <small id="levelBadge">⚔️ Lv.1</small>
+                        </h1>
+                        <div class="class-tag" id="characterClass">
+                            <i class="fas fa-code"></i> 
+                            <span>Class</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <i class="fas fa-fire"></i>
+                        <div class="stat-info">
+                            <span class="stat-label">Commits</span>
+                            <span class="stat-value" id="commits">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-hat-wizard"></i>
+                        <div class="stat-info">
+                            <span class="stat-label">Primary Language</span>
+                            <span class="stat-value" id="primaryLanguage">-</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-shield-halved"></i>
+                        <div class="stat-info">
+                            <span class="stat-label">Open Source</span>
+                            <span class="stat-value" id="openSourceStatus">-</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-star"></i>
+                        <div class="stat-info">
+                            <span class="stat-label">Stars Earned</span>
+                            <span class="stat-value" id="starsEarned">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- XP Section -->
+                <div class="xp-section">
+                    <div class="xp-bar-wrap">
+                        <div class="xp-label">
+                            <span>
+                                <i class="fas fa-gem" style="color: #d7b8ff;"></i> 
+                                XP <span id="currentXP">0</span> / <span id="nextLevelXP">1000</span>
+                            </span>
+                            <span id="xpPercentage">0%</span>
+                        </div>
+                        <div class="xp-track">
+                            <div class="xp-fill" id="xpFill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                    <div class="level-badge">
+                        <i class="fas fa-crown"></i> 
+                        <span id="levelNumber">1</span>
+                    </div>
+                </div>
+
+                <!-- Achievements -->
+                <div class="achievements" id="achievementsContainer">
+                    <!-- Dynamically generated -->
+                </div>
+
+                <!-- Contribution Map -->
+                <div class="contribution-map">
+                    <div class="map-title">
+                        <span><i class="far fa-calendar-alt"></i> Contribution Map</span>
+                        <span id="contributionsCount">0 contributions this week</span>
+                    </div>
+                    <div class="map-grid" id="contributionGrid">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="share-row">
+                    <button class="btn" id="refreshBtn">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button class="btn btn-share" id="shareBtn">
+                        <i class="fas fa-share-alt"></i> Share Card
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Made with ❤️ by the GitHub RPG Community</p>
+            <p>
+                <a href="#" target="_blank">
+                    <i class="fab fa-github"></i> View on GitHub
+                </a>
+            </p>
+        </footer>
+    </div>
+
+    <!-- ========== ALL JAVASCRIPT EMBEDDED ========== -->
+    <script>
+        (function() {
+            'use strict';
+
+            // ==================== GitHub API ====================
+            class GitHubAPI {
+                constructor() {
+                    this.corsProxy = 'https://api.allorigins.win/raw?url=';
+                    this.baseURL = 'https://api.github.com';
+                    this.useProxy = true;
+                    this.headers = {
+                        'Accept': 'application/vnd.github.v3+json',
+                        'User-Agent': 'GitHub-RPG-Character/1.0'
+                    };
+                }
+
+                async fetchUserProfile(username) {
+                    try {
+                        const data = await this.fetchRealData(username);
+                        return data;
+                    } catch (error) {
+                        console.warn('Using fallback data for:', username);
+                        return this.generateFallbackData(username);
+                    }
+                }
+
+                async fetchRealData(username) {
+                    const user = await this.fetchUser(username);
+                    const repos = await this.fetchRepos(username);
+                    const events = await this.fetchEvents(username);
+                    const languages = this.calculateLanguages(repos);
+                    const commits = this.countCommits(events);
+                    const prs = this.countPullRequests(events);
+                    const issues = this.countIssues(events);
+                    const stars = this.countStars(repos);
+                    const contributions = await this.fetchContributions(username, events);
+
+                    return {
+                        login: user.login,
+                        name: user.name || user.login,
+                        avatar_url: user.avatar_url,
+                        bio: user.bio || '',
+                        company: user.company || '',
+                        location: user.location || '',
+                        public_repos: user.public_repos,
+                        followers: user.followers,
+                        following: user.following,
+                        created_at: user.created_at,
+                        updated_at: user.updated_at,
+                        languages,
+                        repos: repos.slice(0, 10),
+                        stats: {
+                            commits,
+                            prs,
+                            issues,
+                            stars,
+                            totalRepos: repos.length
+                        },
+                        contributions,
+                        events: events.slice(0, 50)
+                    };
+                }
+
+                async fetchUser(username) {
+                    const url = this.useProxy 
+                        ? `${this.corsProxy}${encodeURIComponent(`${this.baseURL}/users/${username}`)}`
+                        : `${this.baseURL}/users/${username}`;
+                    const response = await fetch(url, { headers: this.headers });
+                    if (!response.ok) {
+                        const error = new Error(`GitHub API error: ${response.status}`);
+                        error.status = response.status;
+                        throw error;
+                    }
+                    return response.json();
+                }
+
+                async fetchRepos(username) {
+                    const url = this.useProxy 
+                        ? `${this.corsProxy}${encodeURIComponent(`${this.baseURL}/users/${username}/repos?per_page=100&sort=updated`)}`
+                        : `${this.baseURL}/users/${username}/repos?per_page=100&sort=updated`;
+                    const response = await fetch(url, { headers: this.headers });
+                    if (!response.ok) throw new Error(`Failed to fetch repositories: ${response.status}`);
+                    return response.json();
+                }
+
+                async fetchEvents(username) {
+                    const url = this.useProxy 
+                        ? `${this.corsProxy}${encodeURIComponent(`${this.baseURL}/users/${username}/events?per_page=100`)}`
+                        : `${this.baseURL}/users/${username}/events?per_page=100`;
+                    const response = await fetch(url, { headers: this.headers });
+                    if (!response.ok) throw new Error(`Failed to fetch events: ${response.status}`);
+                    return response.json();
+                }
+
+                async fetchContributions(username, events) {
+                    try {
+                        const today = new Date();
+                        const weeks = [];
+                        const contributionMap = {};
+                        events.forEach(event => {
+                            const date = new Date(event.created_at).toISOString().split('T')[0];
+                            contributionMap[date] = (contributionMap[date] || 0) + 1;
+                        });
+
+                        for (let w = 0; w < 12; w++) {
+                            const days = [];
+                            for (let d = 0; d < 7; d++) {
+                                const date = new Date(today);
+                                date.setDate(date.getDate() - (w * 7 + d));
+                                const dateStr = date.toISOString().split('T')[0];
+                                days.push({
+                                    date: dateStr,
+                                    contributionCount: contributionMap[dateStr] || 0,
+                                    color: '#2ea043'
+                                });
+                            }
+                            weeks.push({ contributionDays: days });
+                        }
+                        
+                        return {
+                            totalContributions: events.length,
+                            weeks: weeks.reverse()
+                        };
+                    } catch (error) {
+                        console.warn('Failed to fetch contribution data:', error);
+                        return this.generateFallbackContributions();
+                    }
+                }
+
+                calculateLanguages(repos) {
+                    const langMap = {};
+                    let total = 0;
+                    repos.forEach(repo => {
+                        if (repo.language) {
+                            langMap[repo.language] = (langMap[repo.language] || 0) + 1;
+                            total++;
+                        }
+                    });
+                    return Object.entries(langMap)
+                        .map(([name, count]) => ({ name, count, percentage: (count / total) * 100 }))
+                        .sort((a, b) => b.count - a.count);
+                }
+
+                countCommits(events) {
+                    return events.filter(e => e.type === 'PushEvent' || e.type === 'CreateEvent' || e.type === 'PullRequestEvent').length;
+                }
+
+                countPullRequests(events) {
+                    return events.filter(e => e.type === 'PullRequestEvent' && e.payload?.action === 'opened').length;
+                }
+
+                countIssues(events) {
+                    return events.filter(e => e.type === 'IssuesEvent' && e.payload?.action === 'opened').length;
+                }
+
+                countStars(repos) {
+                    return repos.reduce((sum, repo) => sum + (repo.stargazers_count || 0), 0);
+                }
+
+                generateFallbackData(username) {
+                    const randomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+                    return {
+                        login: username,
+                        name: username.charAt(0).toUpperCase() + username.slice(1),
+                        avatar_url: `https://ui-avatars.com/api/?name=${username}&size=128&background=6c5ce7&color=fff&bold=true`,
+                        bio: `GitHub developer and open source enthusiast`,
+                        company: '',
+                        location: '🌍 Everywhere',
+                        public_repos: randomInt(5, 30),
+                        followers: randomInt(10, 200),
+                        following: randomInt(5, 50),
+                        created_at: new Date(Date.now() - randomInt(365, 1095) * 24 * 60 * 60 * 1000).toISOString(),
+                        updated_at: new Date().toISOString(),
+                        languages: [
+                            { name: 'JavaScript', count: randomInt(10, 30), percentage: 35 },
+                            { name: 'TypeScript', count: randomInt(5, 20), percentage: 25 },
+                            { name: 'Python', count: randomInt(5, 15), percentage: 20 },
+                            { name: 'HTML/CSS', count: randomInt(3, 10), percentage: 15 },
+                            { name: 'Other', count: randomInt(2, 5), percentage: 5 }
+                        ],
+                        repos: Array.from({ length: randomInt(5, 10) }, (_, i) => ({
+                            name: `project-${i + 1}`,
+                            description: `A cool project for ${username}`,
+                            stargazers_count: randomInt(0, 50),
+                            language: ['JavaScript', 'TypeScript', 'Python', 'HTML'][randomInt(0, 3)]
+                        })),
+                        stats: {
+                            commits: randomInt(100, 2000),
+                            prs: randomInt(10, 100),
+                            issues: randomInt(5, 50),
+                            stars: randomInt(50, 500),
+                            totalRepos: randomInt(5, 30)
+                        },
+                        contributions: this.generateFallbackContributions(),
+                        events: []
+                    };
+                }
+
+                generateFallbackContributions() {
+                    const weeks = [];
+                    const today = new Date();
+                    for (let w = 0; w < 12; w++) {
+                        const days = [];
+                        for (let d = 0; d < 7; d++) {
+                            const date = new Date(today);
+                            date.setDate(date.getDate() - (w * 7 + d));
+                            const isWeekend = d === 0 || d === 6;
+                            const count = isWeekend ? Math.floor(Math.random() * 3) : Math.floor(Math.random() * 8);
+                            days.push({
+                                date: date.toISOString().split('T')[0],
+                                contributionCount: count,
+                                color: count > 5 ? '#2ea043' : count > 2 ? '#39d353' : '#216e39'
+                            });
+                        }
+                        weeks.push({ contributionDays: days });
+                    }
+                    return {
+                        totalContributions: weeks.flatMap(w => w.contributionDays).reduce((sum, d) => sum + d.contributionCount, 0),
+                        weeks: weeks.reverse()
+                    };
+                }
+            }
+
+            // ==================== Character Class ====================
+            class CharacterClass {
+                constructor() {
+                    this.classes = {
+                        'full_stack_knight': { id: 'full_stack_knight', name: 'Full-Stack Knight', icon: '⚔️', description: 'Master of both frontend and backend', color: '#ff6b6b', emoji: '⚔️' },
+                        'typescript_wizard': { id: 'typescript_wizard', name: 'TypeScript Wizard', icon: '🧙', description: 'Casts spells with type safety', color: '#3178c6', emoji: '🧙' },
+                        'open_source_defender': { id: 'open_source_defender', name: 'Open Source Defender', icon: '🛡️', description: 'Protects and improves open source projects', color: '#2ea043', emoji: '🛡️' },
+                        'hackathon_hero': { id: 'hackathon_hero', name: 'Hackathon Hero', icon: '⚡', description: 'Thrives in coding competitions', color: '#f7d44a', emoji: '⚡' },
+                        'python_alchemist': { id: 'python_alchemist', name: 'Python Alchemist', icon: '🐍', description: 'Transforms data with Python', color: '#3776ab', emoji: '🐍' },
+                        'javascript_ninja': { id: 'javascript_ninja', name: 'JavaScript Ninja', icon: '🥷', description: 'Stealthy and precise with JS', color: '#f7df1e', emoji: '🥷' },
+                        'beginner_adventurer': { id: 'beginner_adventurer', name: 'Beginner Adventurer', icon: '🌱', description: 'Starting the coding journey', color: '#58a6ff', emoji: '🌱' }
+                    };
+                }
+
+                determineClass(data) {
+                    const stats = data.stats || {};
+                    const languages = data.languages || [];
+                    let highestScore = 0;
+                    let bestClass = this.classes.beginner_adventurer;
+
+                    for (const [id, classDef] of Object.entries(this.classes)) {
+                        let score = 0.1;
+                        if (id === 'full_stack_knight') {
+                            if (stats.commits > 500) score += 0.2;
+                            if (languages.length > 2) score += 0.2;
+                            if (stats.totalRepos > 15) score += 0.2;
+                        }
+                        if (id === 'typescript_wizard') {
+                            const ts = languages.find(l => l.name === 'TypeScript');
+                            if (ts && ts.percentage > 40) score += 0.4;
+                            if (stats.commits > 200) score += 0.2;
+                        }
+                        if (id === 'open_source_defender') {
+                            if (stats.prs > 20) score += 0.4;
+                            if (stats.issues > 10) score += 0.2;
+                        }
+                        if (id === 'python_alchemist') {
+                            const py = languages.find(l => l.name === 'Python');
+                            if (py && py.percentage > 50) score += 0.4;
+                            if (stats.commits > 200) score += 0.2;
+                        }
+                        if (id === 'javascript_ninja') {
+                            const js = languages.find(l => l.name === 'JavaScript');
+                            if (js && js.percentage > 50) score += 0.4;
+                            if (stats.commits > 200) score += 0.2;
+                        }
+                        if (id === 'hackathon_hero') {
+                            const hasHackathon = data.repos?.some(r => 
+                                r.name?.toLowerCase().includes('hack') || 
+                                (r.description && r.description.toLowerCase().includes('hackathon'))
+                            );
+                            if (hasHackathon) score += 0.3;
+                            if (stats.commits > 300) score += 0.2;
+                        }
+                        if (score > highestScore) {
+                            highestScore = score;
+                            bestClass = classDef;
+                        }
+                    }
+                    return { ...bestClass, score: highestScore };
+                }
+            }
+
+            // ==================== Achievement System ====================
+            class AchievementSystem {
+                getAchievements(data) {
+                    const achievements = [];
+                    const stats = data.stats || {};
+                    const languages = data.languages || [];
+                    
+                    if (stats.commits > 100) achievements.push({ icon: '🔥', name: '100+ Commits', description: 'Made over 100 commits' });
+                    if (stats.commits > 500) achievements.push({ icon: '⚡', name: '500+ Commits', description: 'Made over 500 commits' });
+                    if (stats.commits > 1000) achievements.push({ icon: '🏆', name: '1k+ Commits', description: 'Made over 1000 commits' });
+                    if (stats.prs > 10) achievements.push({ icon: '🔄', name: '10+ PRs', description: 'Created over 10 pull requests' });
+                    if (stats.prs > 50) achievements.push({ icon: '🔀', name: '50+ PRs', description: 'Created over 50 pull requests' });
+                    if (stats.stars > 100) achievements.push({ icon: '⭐', name: '100+ Stars', description: 'Received over 100 stars' });
+                    if (stats.stars > 500) achievements.push({ icon: '🌟', name: '500+ Stars', description: 'Received over 500 stars' });
+                    if (languages.length > 3) achievements.push({ icon: '🌐', name: 'Polyglot', description: `Uses ${languages.length} languages` });
+                    if (data.followers > 50) achievements.push({ icon: '👥', name: '50+ Followers', description: 'Has over 50 followers' });
+                    if (stats.prs > 5) achievements.push({ icon: '🤝', name: 'Open Source Contributor', description: 'Contributed to open source' });
+                    if (stats.totalRepos > 20) achievements.push({ icon: '📚', name: '20+ Repos', description: 'Has over 20 repositories' });
+                    
+                    return achievements.slice(0, 8);
+                }
+            }
+
+            // ==================== Stats Calculator ====================
+            class StatsCalculator {
+                calculate(data) {
+                    const stats = data.stats || {};
+                    const commits = stats.commits || 0;
+                    const prs = stats.prs || 0;
+                    const stars = stats.stars || 0;
+                    const issues = stats.issues || 0;
+                    const xp = (commits * 5) + (prs * 20) + (stars * 10) + (issues * 8);
+                    const level = Math.floor(xp / 1000) + 1;
+                    const currentLevelXP = (level - 1) * 1000;
+                    const nextLevelXP = level * 1000;
+                    const xpProgress = Math.min((xp - currentLevelXP) / (nextLevelXP - currentLevelXP), 0.99);
+                    return { xp, level, xpProgress, currentLevelXP, nextLevelXP, commits, prs, stars, issues };
+                }
+            }
+
+            // ==================== UI Renderer ====================
+            class UIRenderer {
+                renderCharacterCard(data) {
+                    const classSystem = new CharacterClass();
+                    const achievementSystem = new AchievementSystem();
+                    const statsCalculator = new StatsCalculator();
+                    
+                    const characterClass = classSystem.determineClass(data);
+                    const achievements = achievementSystem.getAchievements(data);
+                    const stats = statsCalculator.calculate(data);
+                    
+                    document.getElementById('avatar').src = data.avatar_url;
+                    document.getElementById('displayName').textContent = data.name || data.login;
+                    document.getElementById('levelBadge').textContent = `${characterClass.emoji || '⚔️'} Lv.${stats.level}`;
+                    
+                    const classElement = document.getElementById('characterClass');
+                    classElement.innerHTML = `<i class="fas fa-code"></i> <span>${characterClass.emoji} ${characterClass.name}</span>`;
+                    classElement.style.borderColor = characterClass.color;
+                    
+                    document.getElementById('commits').textContent = stats.commits.toLocaleString();
+                    document.getElementById('starsEarned').textContent = stats.stars.toLocaleString();
+                    
+                    const primaryLang = data.languages.length > 0 ? data.languages[0].name : 'None';
+                    document.getElementById('primaryLanguage').textContent = primaryLang;
+                    
+                    const prCount = stats.prs || 0;
+                    document.getElementById('openSourceStatus').textContent = prCount > 20 ? '🛡️ Defender' : prCount > 5 ? '🤝 Contributor' : '🌱 Learner';
+                    
+                    document.getElementById('currentXP').textContent = stats.xp;
+                    document.getElementById('nextLevelXP').textContent = stats.nextLevelXP;
+                    document.getElementById('xpPercentage').textContent = `${Math.round(stats.xpProgress * 100)}%`;
+                    document.getElementById('xpFill').style.width = `${stats.xpProgress * 100}%`;
+                    document.getElementById('levelNumber').textContent = stats.level;
+                    
+                    this.renderAchievements(achievements);
+                    this.renderContributionMap(data.contributions);
+                    
+                    window.currentCharacterData = { ...data, stats, characterClass, achievements };
+                }
+                
+                renderAchievements(achievements) {
+                    const container = document.getElementById('achievementsContainer');
+                    container.innerHTML = '';
+                    if (achievements.length === 0) {
+                        container.innerHTML = '<span class="achievement"><i class="fas fa-seedling"></i> Start your journey!</span>';
+                        return;
+                    }
+                    achievements.forEach(achievement => {
+                        const div = document.createElement('span');
+                        div.className = 'achievement';
+                        div.innerHTML = `${achievement.icon} ${achievement.name}`;
+                        div.title = achievement.description;
+                        container.appendChild(div);
+                    });
+                }
+                
+                renderContributionMap(contributions) {
+                    const grid = document.getElementById('contributionGrid');
+                    grid.innerHTML = '';
+                    
+                    if (!contributions || !contributions.weeks) {
+                        for (let i = 0; i < 70; i++) {
+                            const cell = document.createElement('div');
+                            cell.className = 'map-cell';
+                            const level = Math.floor(Math.random() * 4);
+                            if (level === 1) cell.classList.add('active-low');
+                            else if (level === 2) cell.classList.add('active-mid');
+                            else if (level >= 3) cell.classList.add('active-high');
+                            grid.appendChild(cell);
+                        }
+                        document.getElementById('contributionsCount').textContent = '0 contributions this week';
+                        return;
+                    }
+                    
+                    const allDays = contributions.weeks.flatMap(week => week.contributionDays);
+                    const days = allDays.slice(-70);
+                    const maxCount = Math.max(...days.map(d => d.contributionCount), 1);
+                    
+                    days.forEach(day => {
+                        const cell = document.createElement('div');
+                        cell.className = 'map-cell';
+                        const count = day.contributionCount || 0;
+                        const level = count === 0 ? 0 : count < maxCount * 0.25 ? 1 : count < maxCount * 0.5 ? 2 : 3;
+                        if (level === 1) cell.classList.add('active-low');
+                        else if (level === 2) cell.classList.add('active-mid');
+                        else if (level >= 3) cell.classList.add('active-high');
+                        cell.title = `${day.date}: ${count} contributions`;
+                        grid.appendChild(cell);
+                    });
+                    
+                    const recentWeeks = contributions.weeks.slice(-2);
+                    const recentTotal = recentWeeks.flatMap(w => w.contributionDays).reduce((sum, d) => sum + d.contributionCount, 0);
+                    document.getElementById('contributionsCount').textContent = `${recentTotal} contributions this week`;
+                }
+            }
+
+            // ==================== Main App ====================
+            class GitHubRPGApp {
+                constructor() {
+                    this.api = new GitHubAPI();
+                    this.ui = new UIRenderer();
+                    this.init();
+                }
+
+                init() {
+                    this.usernameInput = document.getElementById('usernameInput');
+                    this.generateBtn = document.getElementById('generateBtn');
+                    this.errorMessage = document.getElementById('errorMessage');
+                    this.loadingSpinner = document.getElementById('loadingSpinner');
+                    this.characterCard = document.getElementById('characterCard');
+                    this.refreshBtn = document.getElementById('refreshBtn');
+                    this.shareBtn = document.getElementById('shareBtn');
+
+                    this.generateBtn.addEventListener('click', () => this.generateCharacter());
+                    this.usernameInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') this.generateCharacter();
+                    });
+                    if (this.refreshBtn) {
+                        this.refreshBtn.addEventListener('click', () => this.generateCharacter());
+                    }
+                    if (this.shareBtn) {
+                        this.shareBtn.addEventListener('click', () => this.shareCharacter());
+                    }
+
+                    setTimeout(() => this.generateCharacter(), 500);
+                }
+
+                async generateCharacter() {
+                    const username = this.usernameInput.value.trim();
+                    if (!username) {
+                        this.showError('Please enter a GitHub username');
+                        return;
+                    }
+                    await this.fetchAndRender(username);
+                }
+
+                async fetchAndRender(username) {
+                    try {
+                        this.showLoading(true);
+                        this.hideError();
+                        const data = await this.api.fetchUserProfile(username);
+                        setTimeout(() => {
+                            this.ui.renderCharacterCard(data);
+                            this.characterCard.classList.remove('hidden');
+                            this.showLoading(false);
+                            this.animateContributions();
+                        }, 500);
+                    } catch (error) {
+                        console.error('Error:', error);
+                        this.showError(error.message || 'Failed to fetch GitHub data');
+                        this.characterCard.classList.add('hidden');
+                        this.showLoading(false);
+                    }
+                }
+
+                animateContributions() {
+                    const cells = document.querySelectorAll('.map-cell.active-high');
+                    let delay = 0;
+                    cells.forEach(cell => {
+                        setTimeout(() => {
+                            cell.style.transition = 'box-shadow 0.3s';
+                            cell.style.boxShadow = '0 0 20px #9f7eff';
+                            setTimeout(() => { cell.style.boxShadow = ''; }, 300);
+                        }, delay);
+                        delay += 100;
+                    });
+                }
+
+                shareCharacter() {
+                    const data = window.currentCharacterData;
+                    if (!data) return;
+                    const text = `🎮 GitHub RPG Character\n` +
+                        `👤 ${data.name || data.login}\n` +
+                        `⚔️ Level ${data.stats.level} ${data.characterClass.name}\n` +
+                        `🔥 ${data.stats.commits} commits\n` +
+                        `⭐ ${data.stats.stars} stars earned\n` +
+                        `🏆 ${data.achievements.length} achievements`;
+                    if (navigator.share) {
+                        navigator.share({ title: 'GitHub RPG Character', text, url: window.location.href }).catch(() => {});
+                    } else {
+                        navigator.clipboard.writeText(text).then(() => {
+                            this.showError('Copied to clipboard!');
+                            setTimeout(() => this.hideError(), 3000);
+                        }).catch(() => this.showError('Could not share'));
+                    }
+                }
+
+                showError(message) {
+                    this.errorMessage.textContent = message;
+                    this.errorMessage.classList.remove('hidden');
+                }
+
+                hideError() {
+                    this.errorMessage.classList.add('hidden');
+                }
+
+                showLoading(visible) {
+                    this.loadingSpinner.classList.toggle('hidden', !visible);
+                }
+            }
+
+            // ==================== Start App ====================
+            document.addEventListener('DOMContentLoaded', () => {
+                window.app = new GitHubRPGApp();
+            });
+
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Transform any GitHub profile into an RPG character" />
+    <title>GitHub → RPG Character</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body>
+    <div id="app">
+        <!-- Search Section -->
+        <section class="search-section">
+            <div class="container">
+                <h1 class="logo">
+                    <i class="fas fa-dragon"></i>
+                    GitHub RPG
+                </h1>
+                <div class="search-box">
+                    <input 
+                        type="text" 
+                        id="usernameInput" 
+                        placeholder="Enter GitHub username..."
+                        autocomplete="off"
+                        value="octocat"
+                    />
+                    <button id="generateBtn" class="btn-primary">
+                        <i class="fas fa-arrow-right"></i>
+                        Generate Character
+                    </button>
+                </div>
+                <div id="errorMessage" class="error-message hidden"></div>
+            </div>
+        </section>
+
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="loading-spinner hidden">
+            <div class="spinner"></div>
+            <p>Summoning your character...</p>
+        </div>
+
+        <!-- Character Card -->
+        <section id="characterCard" class="character-card hidden">
+            <div class="rpg-card">
+                <!-- Header -->
+                <div class="profile-header">
+                    <div class="avatar-frame">
+                        <img id="avatar" src="" alt="Avatar" />
+                    </div>
+                    <div class="hero-title">
+                        <h1>
+                            <span id="displayName">Developer</span>
+                            <small id="levelBadge">⚔️ Lv.1</small>
+                        </h1>
+                        <div class="class-tag" id="characterClass">
+                            <i class="fas fa-code"></i> 
+                            <span>Class</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <i class="fas fa-fire"></i>
+                        <div class="stat-info">
+                            <span class="stat-label">Commits</span>
+                            <span class="stat-value" id="commits">0</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-hat-wizard"></i>
+                        <div class="stat-info">
+                            <span class="stat-label">Primary Language</span>
+                            <span class="stat-value" id="primaryLanguage">-</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-shield-halved"></i>
+                        <div class="stat-info">
+                            <span class="stat-label">Open Source</span>
+                            <span class="stat-value" id="openSourceStatus">-</span>
+                        </div>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-star"></i>
+                        <div class="stat-info">
+                            <span class="stat-label">Stars Earned</span>
+                            <span class="stat-value" id="starsEarned">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- XP Section -->
+                <div class="xp-section">
+                    <div class="xp-bar-wrap">
+                        <div class="xp-label">
+                            <span>
+                                <i class="fas fa-gem" style="color: #d7b8ff;"></i> 
+                                XP <span id="currentXP">0</span> / <span id="nextLevelXP">1000</span>
+                            </span>
+                            <span id="xpPercentage">0%</span>
+                        </div>
+                        <div class="xp-track">
+                            <div class="xp-fill" id="xpFill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                    <div class="level-badge">
+                        <i class="fas fa-crown"></i> 
+                        <span id="levelNumber">1</span>
+                    </div>
+                </div>
+
+                <!-- Achievements -->
+                <div class="achievements" id="achievementsContainer">
+                    <!-- Dynamically generated -->
+                </div>
+
+                <!-- Contribution Map -->
+                <div class="contribution-map">
+                    <div class="map-title">
+                        <span><i class="far fa-calendar-alt"></i> Contribution Map</span>
+                        <span id="contributionsCount">0 contributions this week</span>
+                    </div>
+                    <div class="map-grid" id="contributionGrid">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="share-row">
+                    <button class="btn" id="refreshBtn">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button class="btn btn-share" id="shareBtn">
+                        <i class="fas fa-share-alt"></i> Share Card
+                    </button>
+                    <button class="btn btn-download" id="downloadBtn">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Made with ❤️ by the GitHub RPG Community</p>
+            <p>
+                <a href="https://github.com/mefaisalraheem/Github-RPG-Character.git"
+                    <i class="fab fa-github"></i> View on GitHub
+                </a>
+            </p>
+        </footer>
+    </div>
+
+    <!-- Scripts - All in one file for simplicity -->
+    <script src="js/app.js"></script>
+</body>
+</html>
